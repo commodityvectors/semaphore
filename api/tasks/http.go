@@ -98,6 +98,17 @@ func GetTaskOutput(w http.ResponseWriter, r *http.Request) {
 	mulekick.WriteJSON(w, http.StatusOK, output)
 }
 
+func GetTaskStatus(w http.ResponseWriter, r *http.Request) {
+	task := context.Get(r, "task").(db.Task)
+
+	var output []db.Task
+	if _, err := db.Mysql.Select(&output, "select id, template_id, status, playbook, environment, user_id, debug, dry_run, created, start, end from task where id=?", task.ID); err != nil {
+		panic(err)
+	}
+
+	mulekick.WriteJSON(w, http.StatusOK, output[0])
+}
+
 func RemoveTask(w http.ResponseWriter, r *http.Request) {
 	task := context.Get(r, "task").(db.Task)
 
